@@ -1,0 +1,386 @@
+# Motordil — schema recortado para el ejercicio técnico.
+# Sólo los tipos que necesita la vista de una subasta en vivo.
+
+type Query {
+	auction(slug: String!): Auction
+	auctions(filter: AuctionFilter!, after: MongoId, first: Int, sort: AuctionSort): AuctionConnection!
+	countAuctions(filter: AuctionFilter!): Int!
+}
+
+scalar DateTime
+
+scalar JSONObject
+
+scalar MongoId
+
+enum AchievementKindGql {
+	ONE_TIME
+	CUMULATIVE
+}
+
+enum AuctionEndsIn {
+	ONE_HOUR
+	FOUR_HOURS
+	ONE_DAY
+	FIVE_DAYS
+	SEVEN_DAYS
+}
+
+enum AuctionSort {
+	STARTS_AT_ASC
+	STARTS_AT_DESC
+	ENDS_AT_ASC
+	ENDS_AT_DESC
+	HIGHEST_BID
+	LOWEST_BID
+	RECENT_BID_ASC
+	RECENT_BID_DESC
+}
+
+enum AuctionState {
+	FINISHED_SALE
+	FINISHED_NO_SALE
+	LIVE
+	CANCELLED
+	DRAFT
+	PENDING
+}
+
+enum AuctionType {
+	CAR
+	MOTORCYCLE
+	AUTOMOBILIA
+	BOAT
+}
+
+enum AutomobiliaCategory {
+	LITERATURE
+	WATCHES
+	MODEL_CARS
+	SIGNS
+	MEMORABILIA
+}
+
+enum Country {
+	ARGENTINA
+	URUGUAY
+}
+
+enum EmbedPlatform {
+	YOUTUBE
+	TIKTOK
+	INSTAGRAM
+}
+
+enum FeedSortOrder {
+	NEWEST
+	OLDEST
+}
+
+enum FuelType {
+	FUEL
+	DIESEL
+	GAS
+	HYBRID
+	ELECTRIC
+}
+
+enum TransmissionType {
+	AUTOMATIC
+	SEMI_AUTOMATIC
+	MANUAL
+}
+
+enum VehicleBodyType {
+	LITTLE_CAR
+	HATCHBACK
+	SEDAN
+	SUV
+	COUNTRY
+	MINIVAN
+	PICK_UP
+	COUPE
+	CABRIO
+	VAN
+	SPORTS_CAR
+	CLASSIC
+	OFF_ROAD
+	LIMO
+	CARAVAN
+	CRANE
+	CHOPPER
+	CRUISER
+	QUAD
+	SPORT
+	TOURING
+	SCOOTER
+	NAKED
+	TRIAL
+	ENDURO
+	OTHER
+}
+
+enum VehicleFeature {
+	HILL_ASSIST
+	WIFI
+	BLUETOOTH
+	TIRE_PRESSURE
+	BLIND_SPOT_CONTROL
+	CRUISE_CONTROL
+	PARK_ASSIST
+	TOUCH_OPEN
+	CAR_PLAY
+	PANORAMIC_SUNROOF
+	SEAT_HEATER
+	REMOTE_IGNITION
+	REVERSE_CAMERA
+	VOICE_CONTROL
+	CHILD_PROOF_SEAT
+	AUTOMATIC_AC
+	DIGITAL_DISPLAY
+	HIFI_SOUND
+	GPS
+	RAIN_SENSOR
+	CUP_HOLDER
+	LED_LIGHTS
+	PPF
+	AM_FM_RADIO
+	MP_3_PLAYER
+	ONBOARD_COMPUTER
+	GUARANTEE_SERVICE
+	ARMORED
+	ABS
+	TRACTION_CONTROL
+	DAY_LIGHT
+	STORAGE_SPACE
+	USB_CHARGER
+	ELECTRONIC_INJECTION
+	ADJUSTABLE_SUSPENSION
+	ALLOY_WHEELS
+	ADJUSTABLE_HANDLEBAR
+	NAVIGATION
+}
+
+input AuctionFilter {
+	search: String
+	followedBy: MongoId
+	wonBy: MongoId
+	createdBy: MongoId
+	onlyNoReserve: Boolean
+	yearRange: RangeInput
+	hasEnded: Boolean
+	startDate: DateFilter
+	endDate: DateFilter
+	state: AuctionState
+	auctionType: AuctionType
+	origins: [String!]
+	categories: [VehicleBodyType!]
+	endsIn: AuctionEndsIn
+	currentBid: RangeInput
+	country: Country
+	bundle: MongoId
+}
+
+input DateFilter {
+	min: DateTime
+	max: DateTime
+}
+
+input FeedFilters {
+	includeBids: Boolean
+	includeComments: Boolean
+	withReserve: Boolean
+	auctionState: AuctionState
+	hasEnded: Boolean
+}
+
+input RangeInput {
+	minValue: Float
+	maxValue: Float
+}
+
+union AuctionPart = MainImage | Description | ImageGallery | Attributes | EmbedGallery
+
+union FeedElement = AuctionBid | Comment
+
+type AchievementProgress {
+	id: String!
+	name: String!
+	description: String!
+	imageUrl: String!
+	kind: AchievementKindGql!
+	threshold: Int
+	current: Int
+	group: String
+	unlocked: Boolean!
+	unlockedAt: String
+}
+
+type Attributes {
+	attributes: JSONObject!
+}
+
+type Auction {
+	id: MongoId!
+	title: String!
+	slug: String!
+	auctionType: AuctionType!
+	automobiliaCategory: AutomobiliaCategory
+	make: String!
+	model: String!
+	version: String
+	year: Int!
+	location: String!
+	country: Country!
+	odometer: Int!
+	equipment: [VehicleFeature!]!
+	fuelType: FuelType!
+	transmissionType: TransmissionType!
+	origin: String!
+	categories: [VehicleBodyType!]!
+	color: String!
+	state: AuctionState!
+	parts: [AuctionPart!]!
+	requestId: MongoId!
+	isLightning: Boolean!
+	isOnsiteAuction: Boolean!
+	soldAfterClose: Boolean!
+	startsAt: DateTime
+	endsAt: DateTime
+	viewCount: Int!
+	currentBid: AuctionBid
+	isNoReserve: Boolean!
+	isNearingReserve: Boolean!
+	hasMetReserve: Boolean!
+	result: AuctionResult
+	countBids: Int!
+	countWatchers: Int!
+	countComments: Int!
+	bids: [AuctionBid!]!
+	currency: CurrencyObject!
+	webUrl: String!
+	bundle: AuctionBundle
+	reservePrice: Float
+	sellerProfile: AuctionProfile
+	sellerPhoneNumber: String
+	isWatching: Boolean!
+	isAlerting: Boolean!
+}
+
+type AuctionBid {
+	id: MongoId!
+	amount: Float!
+	date: DateTime!
+	isAuto: Boolean
+	auction: Auction!
+	profile: AuctionProfile
+	relayedBy: MongoId
+}
+
+type AuctionBundle {
+	id: MongoId!
+	name: String!
+	slug: String!
+	icon: String!
+	country: Country!
+}
+
+type AuctionConnection {
+	pageInfo: PageInfo!
+	edges: [AuctionEdge!]!
+	nodes: [Auction!]!
+}
+
+type AuctionEdge {
+	node: Auction!
+	cursor: String!
+}
+
+type AuctionProfile {
+	id: MongoId!
+	username: String!
+	isBanned: Boolean!
+	isVerified: Boolean!
+	karma: Int!
+	followerCount: Int!
+	followingCount: Int!
+	isFollowing: Boolean!
+	phoneNumber: String
+	paymentProviderData: PaymentProviderData
+	wonAuctions: [Auction!]!
+	avatar: String
+	allAchievements: [AchievementProgress!]!
+	activity(after: DateTime, first: Int, filters: FeedFilters, sort: FeedSortOrder): FeedElementConnection!
+}
+
+type AuctionResult {
+	winningBid: AuctionBid
+	finishedAt: DateTime!
+	isAuctionWinner: Boolean!
+}
+
+type Comment {
+	id: MongoId!
+	content: String!
+	hasMentions: Boolean!
+	isUrgent: Boolean!
+	isDeleted: Boolean!
+	createdAt: DateTime!
+	profile: AuctionProfile
+	replyingTo: Comment
+	replies: [Comment!]!
+	auction: Auction!
+	countUpvotes: Int!
+	isUpvoted: Boolean!
+}
+
+type CurrencyObject {
+	name: String!
+	symbol: String!
+}
+
+type Description {
+	text: String!
+}
+
+type Embed {
+	platform: EmbedPlatform!
+	url: String!
+}
+
+type EmbedGallery {
+	embeds: [Embed!]!
+}
+
+type FeedElementConnection {
+	pageInfo: PageInfo!
+	edges: [FeedElementEdge!]!
+	nodes: [FeedElement!]!
+}
+
+type FeedElementEdge {
+	node: FeedElement!
+	cursor: String!
+}
+
+type ImageGallery {
+	imageUris: [String!]!
+}
+
+type MainImage {
+	imageUri: String!
+}
+
+type PageInfo {
+	hasPreviousPage: Boolean!
+	hasNextPage: Boolean!
+	startCursor: String
+	endCursor: String
+}
+
+type PaymentProviderData {
+	fullName: String! @deprecated(reason: "Use first_name and last_name instead")
+	firstName: String!
+	lastName: String!
+	identification: String!
+}
