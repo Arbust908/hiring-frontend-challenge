@@ -1,0 +1,35 @@
+:root {
+  --color-paper: oklch(17% 0.006 260);
+  --color-paper-2: oklch(22% 0.008 260);
+  --color-ink: oklch(95% 0.005 85);
+  --color-muted: oklch(72% 0.01 260);
+  --color-rule: oklch(34% 0.01 260);
+  --color-panel: oklch(22% 0.008 260);
+  --color-rule-dark: oklch(39% 0.009 60);
+  --color-on-dark: oklch(97% 0.009 85);
+  --color-muted-on-dark: oklch(76% 0.013 80);
+  --color-accent: oklch(66% 0.21 40);
+  --color-accent-hover: oklch(59% 0.19 40);
+  --color-accent-ink: oklch(20% 0.008 60);
+  --color-accent-text: oklch(76% 0.16 40);
+  --color-focus: oklch(76% 0.16 40);
+  --color-success: oklch(77% 0.14 155);
+  --color-warning: oklch(83% 0.09 80);
+  --color-warning-on-dark: oklch(83% 0.09 80);
+
+  --font-display: var(--font-geist-sans), sans-serif;
+  --font-body: var(--font-geist-sans), sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --text-heading: clamp(2rem, 3vw, 3rem);
+  --text-title: clamp(2.75rem, 5vw, 4.5rem);
+  --text-display: clamp(3.75rem, 7vw, 6rem);
+
+  --page-gutter: clamp(1rem, 4vw, 4rem);
+  --page-width: 90rem;
+  --radius-card: 0.25rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
