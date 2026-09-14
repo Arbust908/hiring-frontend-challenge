@@ -27,6 +27,16 @@ El archivo `.env.example` ya incluye los endpoints de staging, de solo lectura y
 
 Necesitás conexión a internet para consultar la API y recibir las actualizaciones del socket.
 
+### Tests
+
+Las pruebas unitarias corren con Jest sobre las funciones clave de la subasta (formato, incrementos de puja y reducer de estado):
+
+```bash
+yarn test
+```
+
+Para dejarlos en modo watch: `yarn test:watch`.
+
 ## Decisiones de implementación
 
 Como no tenía el slug de una subasta de prueba, consulté por GraphQL las subastas en vivo y armé un listado en `/subasta` para poder entrar al detalle de cada una en `/subasta/[slug]`. Aunque el listado no era un requisito, me sirvió como punto de entrada para recorrer y probar la implementación.
@@ -45,7 +55,7 @@ Dejé pendiente una estrategia de caché más elaborada. Las consultas usan `cac
 
 ## Qué haría distinto con una semana
 
-Con una semana, agregaría pruebas unitarias sobre las funciones clave: el cálculo del próximo monto válido, la normalización de los datos y la actualización del estado ante eventos de la subasta. Buscaría cubrir especialmente los límites de cada incremento y los eventos duplicados o fuera de orden.
+Con una semana, ampliaría la cobertura de pruebas unitarias más allá del núcleo: sumaría casos sobre la normalización de los datos que llegan de GraphQL, los eventos del socket con payloads raros o duplicados, y las funciones de formato y cálculo más usadas por la interfaz.
 
 También sumaría pruebas end-to-end para validar la llegada de pujas, las desconexiones y reconexiones del WebSocket, la recuperación de datos actualizados y los estados de carga, error, subasta inexistente y cierre. Completaría ese trabajo con una pasada de pulido de la UI, el comportamiento responsive y las animaciones.
 
